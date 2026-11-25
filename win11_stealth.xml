@@ -1,0 +1,81 @@
+<domain type='kvm'>
+  <name>win11-hardened</name>
+  <memory unit='KiB'>8388608</memory>
+  <currentMemory unit='KiB'>8388608</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <sysinfo type='smbios'>
+    <bios>
+      <entry name='vendor'>American Megatrends Inc.</entry>
+      <entry name='version'>F.22</entry>
+      <entry name='date'>03/15/2023</entry>
+    </bios>
+    <system>
+      <entry name='manufacturer'>HP</entry>
+      <entry name='product'>HP Envy Laptop 17-cr1xxx</entry>
+      <entry name='version'>1.0</entry>
+      <entry name='serial'>5CD3123456</entry>
+      <entry name='sku'>HP_Envy_SKU</entry>
+      <entry name='family'>Envy</entry>
+    </system>
+  </sysinfo>
+  <os firmware='efi'>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE_4M.ms.fd</loader>
+    <nvram template='/usr/share/OVMF/OVMF_VARS_4M.ms.fd'>/var/lib/libvirt/qemu/nvram/win11_VARS.fd</nvram>
+    <smbios mode='sysinfo'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv mode='custom'>
+      <relaxed state='on'/>
+      <vapic state='on'/>
+      <spinlocks state='on' retries='8191'/>
+      <vpindex state='on'/>
+      <synic state='on'/>
+      <vendor_id state='on' value='GenuineIntel'/>
+    </hyperv>
+    <kvm>
+      <hidden state='on'/>
+    </kvm>
+    <vmport state='off'/>
+    <smm state='on'/>
+  </features>
+  <cpu mode='host-passthrough' check='none' migratable='on'>
+    <topology sockets='1' cores='4' threads='1'/>
+    <feature policy='disable' name='hypervisor'/>
+    <feature policy='require' name='invtsc'/>
+  </cpu>
+  <clock offset='localtime'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='yes'/>
+    <timer name='hypervclock' present='no'/>
+  </clock>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/win11.qcow2'/>
+      <target dev='sda' bus='sata'/>
+      <serial>ST1000LM048</serial>
+    </disk>
+    <interface type='network'>
+      <mac address='3c:52:82:4e:7a:19'/>
+      <source network='default'/>
+      <model type='e1000e'/>
+    </interface>
+    <graphics type='spice' autoport='yes'>
+      <listen type='address'/>
+    </graphics>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+    </video>
+    <input type='tablet' bus='usb'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
