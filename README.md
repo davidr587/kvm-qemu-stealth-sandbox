@@ -109,3 +109,6 @@ La única comprobación que permanece en estado `traced!` es:
 
 3. **Tiempo de actividad (Uptime):**
    Mantén la máquina virtual encendida durante al menos **30 minutos** antes de ejecutar análisis para superar las comprobaciones de `GetTickCount()`.
+
+
+*Disclaimer: Este entorno fue creado estrictamente con fines académicos y de investigación en ciberseguridad.*
