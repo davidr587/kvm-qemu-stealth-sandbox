@@ -19,14 +19,16 @@ El comportamiento de las latencias de virtualización depende en gran medida del
 Se ha modificado la configuración XML del dominio de Libvirt (`win11_stealth.xml`) y el registro de Windows para mitigar las firmas clásicas de virtualización:
 
 ### 1. CPU & Hypervisor Masking
+- Uso de `host-passthrough` (`<cpu mode='host-passthrough'>`) para exponer el modelo real del procesador físico al invitado y evitar la cadena genérica `QEMU Virtual CPU`.
 - Ocultación del flag del hipervisor (`<hidden state='on'/>`) y desactivación del bit `hypervisor` en CPUID.
-- Enmascaramiento del `vendor_id` de Hyper-V como `GenuineIntel`.
-- Habilitación de `invtsc` para mantener un contador de marcas de tiempo invariante.
+- Enmascaramiento del `vendor_id` de Hyper-V como `GenuineIntel` y habilitación de `invtsc` para mantener un contador de marcas de tiempo invariante.
+- Desactivación del puerto I/O *backdoor* de VMware (`<vmport state='off'/>`) para evitar falsos positivos de detección de VMware en KVM.
 
 ### 2. SMBIOS & Hardware Spoofing
 - Sobrescritura de los metadatos de la placa base y BIOS para reflejar hardware OEM real (HP Envy, American Megatrends Inc. F.22).
-- Falsificación del número de serie del disco duro (`ST1000LM048`) y uso de interfaz de red `e1000e` (Intel) para evitar identificadores de QEMU/VirtIO.
-- Falsificación de la dirección MAC con un OUI real de Hewlett Packard (`3c:52:82:4e:7a:19`) para evitar el prefijo por defecto de QEMU/KVM (`52:54:00`).
+- Uso de bus **SATA** (`bus='sata'`) con número de serie falsificado (`ST1000LM048`) en lugar de VirtIO para evitar drivers paravirtualizados de Red Hat/QEMU en el sistema invitado.
+- Eliminación del dispositivo *VirtIO Memory Balloon* (`<memballoon model='none'/>`) para suprimir uno de los indicadores más comunes de KVM en el Administrador de Dispositivos.
+- Uso de interfaz de red `e1000e` (Intel) y falsificación de la dirección MAC con un OUI real de Hewlett Packard (`3c:52:82:4e:7a:19`) para evitar el prefijo por defecto de QEMU/KVM (`52:54:00`).
 
 ### 3. Clock & Timer Tuning
 - Desactivación de `hypervclock` y ajuste de temporizadores (`rtc`, `pit`, `hpet`) para reducir firmas de virtualización en el manejo del reloj.
