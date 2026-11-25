@@ -87,20 +87,25 @@ El entorno supera las detecciones de depuradores, sandboxes genéricas (incluyen
 [*] cpuid Intel wrong value for processor name ... OK
 ```
 
-### ⚠️ Limitación Físico-Arquitectónica (RDTSC)
+### ⚠️ Limitación  (RDTSC)
 La única comprobación que permanece en estado `traced!` es:
 `Checking the difference between CPU timestamp counters (rdtsc) forcing VM exit`
 
 **Análisis del hallazgo:** En procesadores de arquitectura móvil/híbrida (Intel Core i7-13700H con P-cores y E-cores), la gestión dinámica de energía y los estados C del procesador introducen una latencia de nanosegundos cuando la CPU ejecuta una salida forzada hacia el hipervisor (VM Exit). Salvo en hardware de escritorio dedicado con frecuencias bloqueadas, se trata de una limitación física del silicio anfitrión y no de la configuración de software.
 
 ## 🚀 Instalación y Uso
-1. Descargar `win11_stealth.xml` y adaptar la ruta del disco `.qcow2` si es necesario.
-2. Definir e iniciar la VM en Libvirt:
+
+1. **Descargar y adaptar el XML:**
+   Descarga `win11_stealth.xml` y ajustar los siguientes campos a tu entorno antes de importarlo:
+   - **Disco virtual:** Modificar `<source file='/var/lib/libvirt/images/win11.qcow2'/>` con la ruta real de tu imagen `.qcow2`.
+   - **Nombre de la VM:** Por defecto el dominio se llama `win11-hardened` (`<name>win11-hardened</name>`). Si lo cambias, usa ese mismo nombre en el comando `virsh start`.
+   - **Rutas UEFI (OVMF):** Verificar que las rutas de `<loader>` y `<nvram>` coincidan con las de tu distribución Linux (las actuales corresponden a Ubuntu/Debian).
+
+2. **Definir e iniciar la VM en Libvirt:**
    ```bash
    virsh define win11_stealth.xml
    virsh start win11-hardened
    ```
-3. Mantener la máquina virtual encendida durante al menos **30 minutos** antes de ejecutar análisis para superar la comprobación de `GetTickCount()`.
 
----
-*Disclaimer: Este entorno fue creado estrictamente con fines académicos y de investigación en ciberseguridad.*
+3. **Tiempo de actividad (Uptime):**
+   Mantén la máquina virtual encendida durante al menos **30 minutos** antes de ejecutar análisis para superar las comprobaciones de `GetTickCount()`.
